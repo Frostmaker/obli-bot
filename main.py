@@ -13,7 +13,7 @@ WEBHOOK_HOST = 'https://obli-bot.herokuapp.com'
 WEBHOOK_PATH = f'/webhook/{TOKEN}'
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 HOST = '0.0.0.0'
-PORT = 5000
+PORT = int(os.getenv('PORT'))
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
