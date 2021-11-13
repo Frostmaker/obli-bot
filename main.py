@@ -9,7 +9,7 @@ if not TOKEN:
     exit('Error: no token provided')
 
 WEBHOOK_HOST = 'https://obli-bot.herokuapp.com/'
-WEBHOOK_PATH = f'{TOKEN}'
+WEBHOOK_PATH = f'webhook/{TOKEN}'
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 HOST = '0.0.0.0'
 PORT = int(os.getenv('PORT'))
