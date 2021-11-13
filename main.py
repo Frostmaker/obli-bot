@@ -1,8 +1,10 @@
 import logging
-from os import getenv
+import os
+from os import getenv, environ
 from sys import exit
 from aiogram import Bot, Dispatcher, executor, types
 
+PORT = int(environ.get('PORT', 3001))
 TOKEN = getenv('TOKEN')
 if not TOKEN:
     exit('Error: no token provided')
@@ -67,3 +69,4 @@ async def echo(message: types.Message):
 
 if __name__ == '__main__':
     executor.start_polling(dp)
+    executor.start_webhook(dispatcher=dp, )
