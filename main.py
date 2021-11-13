@@ -51,9 +51,9 @@ async def send_help(message):
 
 @dp.message_handler(content_types=[types.ContentType.DOCUMENT])
 async def test(message: types.Message):
-    logging.info('Start downloading....')
+    print('Start downloading....')
     await message.document.download(destination_dir='temp/')
-    logging.info('File downloaded.')
+    print('File downloaded.')
     await message.answer('Document saved.')
 
 
@@ -76,10 +76,5 @@ async def echo(message: types.Message):
 
 
 if __name__ == '__main__':
-    # executor.start_polling(dp)
-    bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
-    executor.start_webhook(dispatcher=dp,
-                           webhook_path=WEBHOOK_PATH,
-                           skip_updates=True,
-                           host=HOST,
-                           port=PORT)
+    executor.start_polling(dp)
+    executor.start_webhook(dispatcher=dp, )
