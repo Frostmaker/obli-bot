@@ -11,7 +11,6 @@ if not TOKEN:
 WEBHOOK_HOST = 'https://obli-bot.herokuapp.com'
 WEBHOOK_PATH = f'/webhook/{TOKEN}'
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
-
 HOST = '0.0.0.0'
 PORT = 3001
 
@@ -32,7 +31,7 @@ async def send_welcome(message: types.Message):
     await message.answer("Hello! I'm Obli!\n"
                          "I'll help you with bonds.\n\n"
                          "Available commands:\n"
-                         "/\n"
+                         "/help - for additional information\n"
                          "/\n"
                          "/\n", reply_markup=keyboard)
 
@@ -73,11 +72,22 @@ async def echo(message: types.Message):
     await message.answer('Я не знаю такой команды.')
 
 
+async def on_startup(dp):
+    await bot.set_webhook(WEBHOOK_URL)
+    logging.debug('Bot started....')
+
+
+async def on_shutdown(dp):
+    logging.debug('Bot shutting down....')
+    await bot.delete_webhook()
+
+
 if __name__ == '__main__':
-    executor.start_polling(dp)
-    bot.set_webhook(url=WEBHOOK_URL, drop_pending_updates=True)
+    # executor.start_polling(dp)
     executor.start_webhook(dispatcher=dp,
                            webhook_path=WEBHOOK_PATH,
                            skip_updates=True,
+                           on_startup=on_startup,
+                           on_shutdown=on_shutdown,
                            host=HOST,
                            port=PORT)
