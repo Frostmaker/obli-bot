@@ -15,8 +15,6 @@ WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 HOST = '0.0.0.0'
 PORT = 3001
 
-
-
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
@@ -77,4 +75,9 @@ async def echo(message: types.Message):
 
 if __name__ == '__main__':
     executor.start_polling(dp)
-    executor.start_webhook(dispatcher=dp, )
+    bot.set_webhook(url=WEBHOOK_URL, drop_pending_updates=True)
+    executor.start_webhook(dispatcher=dp,
+                           webhook_path=WEBHOOK_PATH,
+                           skip_updates=True,
+                           host=HOST,
+                           port=PORT)
