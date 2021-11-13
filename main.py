@@ -1,8 +1,9 @@
 import logging
 import os
-from os import getenv, environ
+from os import getenv
 from sys import exit
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.contrib.middlewares.logging import LoggingMiddleware
 
 TOKEN = getenv('TOKEN')
 if not TOKEN:
@@ -12,7 +13,7 @@ WEBHOOK_HOST = 'https://obli-bot.herokuapp.com'
 WEBHOOK_PATH = f'/webhook/{TOKEN}'
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 HOST = '0.0.0.0'
-PORT = 3001
+PORT = 5000
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -20,6 +21,7 @@ logging.basicConfig(level=logging.INFO)
 # Initialize bot and dispatcher
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
+dp.middleware.setup(LoggingMiddleware())
 
 @dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
@@ -74,11 +76,11 @@ async def echo(message: types.Message):
 
 async def on_startup(dp):
     await bot.set_webhook(WEBHOOK_URL)
-    logging.debug('Bot started....')
+    logging.warning('Bot started....')
 
 
 async def on_shutdown(dp):
-    logging.debug('Bot shutting down....')
+    logging.warning('Bot shutting down....')
     await bot.delete_webhook()
 
 
@@ -86,7 +88,6 @@ if __name__ == '__main__':
     # executor.start_polling(dp)
     executor.start_webhook(dispatcher=dp,
                            webhook_path=WEBHOOK_PATH,
-                           skip_updates=True,
                            on_startup=on_startup,
                            on_shutdown=on_shutdown,
                            host=HOST,
