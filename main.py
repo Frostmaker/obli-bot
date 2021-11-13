@@ -1,16 +1,15 @@
 import logging
 import os
-from os import getenv
 from sys import exit
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 
-TOKEN = getenv('TOKEN')
+TOKEN = os.getenv('TOKEN')
 if not TOKEN:
     exit('Error: no token provided')
 
-WEBHOOK_HOST = 'https://obli-bot.herokuapp.com'
-WEBHOOK_PATH = f'/webhook/{TOKEN}'
+WEBHOOK_HOST = 'https://obli-bot.herokuapp.com/'
+WEBHOOK_PATH = f'{TOKEN}'
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 HOST = '0.0.0.0'
 PORT = int(os.getenv('PORT'))
@@ -48,6 +47,12 @@ async def send_help(message):
     await message.answer("Help Here")
 
 
+@dp.message_handler(content_types=['photo'])
+async def echo_photo(message: types.Message):
+    await message.answer_photo(message.photo[-1].file_id)
+    await message.answer('test message')
+
+
 @dp.message_handler(content_types=[types.ContentType.DOCUMENT])
 async def test(message: types.Message):
     print('Start downloading....')
@@ -66,6 +71,11 @@ async def cmd_start(message: types.Message):
     await message.answer("Как подавать котлеты?", reply_markup=keyboard)
 
 
+@dp.message_handler(lambda message: message.text=='С пюрешкой')
+async def with_puree(message: types.Message):
+    await message.answer("Отличный выбор!", reply_markup=types.ReplyKeyboardRemove())
+
+
 @dp.message_handler()
 async def echo(message: types.Message):
     # old style:
@@ -81,7 +91,7 @@ async def on_startup(dp):
 
 async def on_shutdown(dp):
     logging.warning('Bot shutting down....')
-    await bot.delete_webhook()
+    # await bot.delete_webhook()
 
 
 if __name__ == '__main__':
@@ -90,5 +100,4 @@ if __name__ == '__main__':
                            webhook_path=WEBHOOK_PATH,
                            on_startup=on_startup,
                            on_shutdown=on_shutdown,
-                           host=HOST,
                            port=PORT)
