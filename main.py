@@ -4,10 +4,18 @@ from os import getenv, environ
 from sys import exit
 from aiogram import Bot, Dispatcher, executor, types
 
-PORT = int(environ.get('PORT', 3001))
 TOKEN = getenv('TOKEN')
 if not TOKEN:
     exit('Error: no token provided')
+
+WEBHOOK_HOST = 'https://obli-bot.herokuapp.com'
+WEBHOOK_PATH = f'/webhook/{TOKEN}'
+WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
+
+HOST = '0.0.0.0'
+PORT = 3001
+
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -43,9 +51,9 @@ async def send_help(message):
 
 @dp.message_handler(content_types=[types.ContentType.DOCUMENT])
 async def test(message: types.Message):
-    print('Start downloading....')
+    logging.info('Start downloading....')
     await message.document.download(destination_dir='temp/')
-    print('File downloaded.')
+    logging.info('File downloaded.')
     await message.answer('Document saved.')
 
 
@@ -68,5 +76,10 @@ async def echo(message: types.Message):
 
 
 if __name__ == '__main__':
-    executor.start_polling(dp)
-    executor.start_webhook(dispatcher=dp, )
+    # executor.start_polling(dp)
+    bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
+    executor.start_webhook(dispatcher=dp,
+                           webhook_path=WEBHOOK_PATH,
+                           skip_updates=True,
+                           host=HOST,
+                           port=PORT)
