@@ -12,7 +12,9 @@ WEBHOOK_HOST = 'https://obli-bot.herokuapp.com'
 WEBHOOK_PATH = f'/{TOKEN}'
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 HOST = '0.0.0.0'
-PORT = int(os.getenv('PORT'))
+PORT = int(os.environ.get('PORT', 5000))
+# data = ['Sberbank', 'Delimobil', 'Rosneft', 'Phaizer', 'ObligaciiRF']
+data = ['Sberbank', 'Delimobil', 'Rosneft', 'Phaizer']
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -20,7 +22,10 @@ logging.basicConfig(level=logging.INFO)
 # Initialize bot and dispatcher
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
-dp.middleware.setup(LoggingMiddleware())
+
+
+# dp.middleware.setup(LoggingMiddleware())
+
 
 @dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
@@ -29,23 +34,43 @@ async def send_welcome(message: types.Message):
     """
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add('Список облигаций')
+    keyboard.add('Собрать портфель')
     await message.answer("Hello! I'm Obli!\n"
                          "I'll help you with bonds.\n\n"
                          "Available commands:\n"
-                         "/help - for additional information\n"
-                         "/\n"
-                         "/\n", reply_markup=keyboard)
+                         "/help - for additional information\n", reply_markup=keyboard)
 
 
 @dp.message_handler(commands=['help'])
-async def send_help(message):
+async def send_help(message: types.Message):
     '''
     This handler will be called when user sends `/help` command
     :param message:
     :return:
     '''
-    await message.answer("Help Here")
+    await message.answer("Help here!")
 
+
+@dp.message_handler(lambda message: message.text == 'Собрать портфель')
+async def pack_bag(message: types.Message):
+    await message.answer('Собираем портфель....')
+
+
+@dp.message_handler(lambda message: message.text == 'Список облигаций')
+async def show_bonds(message: types.Message):
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+    inline_keyboard = InlineKeyboardMarkup(row_width=3)
+    buttons = []
+    for bond in range(0, len(data)):
+        buttons.append(InlineKeyboardButton(f'{data[bond]}', callback_data=f'{data[bond]}'))
+    inline_keyboard.add(*buttons)
+
+    keyboard.add('Список облигаций')
+    await message.answer('Выберите облигацию, которую хотите посмотреть:', reply_markup=inline_keyboard)
+
+
+# region Test
 
 @dp.message_handler(content_types=['photo'])
 async def echo_photo(message: types.Message):
@@ -55,9 +80,7 @@ async def echo_photo(message: types.Message):
 
 @dp.message_handler(content_types=[types.ContentType.DOCUMENT])
 async def test(message: types.Message):
-    print('Start downloading....')
-    await message.document.download(destination_dir='temp/')
-    print('File downloaded.')
+    # await message.document.download(destination_dir='temp/')
     await message.answer('Document saved.')
 
 
@@ -71,16 +94,18 @@ async def cmd_start(message: types.Message):
     await message.answer("Как подавать котлеты?", reply_markup=keyboard)
 
 
-@dp.message_handler(lambda message: message.text=='С пюрешкой')
+@dp.message_handler(lambda message: message.text == 'С пюрешкой')
 async def with_puree(message: types.Message):
     await message.answer("Отличный выбор!", reply_markup=types.ReplyKeyboardRemove())
 
 
+# endregion
+
+
 @dp.message_handler()
-async def echo(message: types.Message):
+async def nothing(message: types.Message):
     # old style:
     # await bot.send_message(message.chat.id, message.text)
-
     await message.answer('Я не знаю такой команды.')
 
 
@@ -95,10 +120,10 @@ async def on_shutdown(dp):
 
 
 if __name__ == '__main__':
-    # executor.start_polling(dp)
-    executor.start_webhook(dispatcher=dp,
-                           webhook_path=WEBHOOK_PATH,
-                           on_startup=on_startup,
-                           on_shutdown=on_shutdown,
-                           host=HOST,
-                           port=PORT)
+    executor.start_polling(dp, skip_updates=True)  #
+    # executor.start_webhook(dispatcher=dp,
+    #                       webhook_path=WEBHOOK_PATH,
+    #                       on_startup=on_startup,
+    #                       on_shutdown=on_shutdown,
+    #                       host=HOST,
+    #                       port=PORT)
