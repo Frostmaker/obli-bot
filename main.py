@@ -13,8 +13,8 @@ WEBHOOK_PATH = f'/{TOKEN}'
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 HOST = '0.0.0.0'
 PORT = int(os.environ.get('PORT', 5000))
-# data = ['Sberbank', 'Delimobil', 'Rosneft', 'Phaizer', 'ObligaciiRF']
-data = ['Sberbank', 'Delimobil', 'Rosneft', 'Phaizer']
+data = ['Sberbank', 'Delimobil', 'Rosneft', 'Phaizer', 'ObligaciiRF']
+# data = ['Sberbank', 'Delimobil', 'Rosneft', 'Phaizer']
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -24,7 +24,7 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
 
-# dp.middleware.setup(LoggingMiddleware())
+dp.middleware.setup(LoggingMiddleware())
 
 
 @dp.message_handler(commands=['start'])
@@ -36,9 +36,7 @@ async def send_welcome(message: types.Message):
     keyboard.add('Список облигаций')
     keyboard.add('Собрать портфель')
     await message.answer("Hello! I'm Obli!\n"
-                         "I'll help you with bonds.\n\n"
-                         "Available commands:\n"
-                         "/help - for additional information\n", reply_markup=keyboard)
+                         "I'll help you with bonds.\n", reply_markup=keyboard)
 
 
 @dp.message_handler(commands=['help'])
@@ -58,16 +56,36 @@ async def pack_bag(message: types.Message):
 
 @dp.message_handler(lambda message: message.text == 'Список облигаций')
 async def show_bonds(message: types.Message):
-    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-
-    inline_keyboard = InlineKeyboardMarkup(row_width=3)
+    keyboard = InlineKeyboardMarkup(row_width=3)
     buttons = []
     for bond in range(0, len(data)):
         buttons.append(InlineKeyboardButton(f'{data[bond]}', callback_data=f'{data[bond]}'))
-    inline_keyboard.add(*buttons)
+    keyboard.add(*buttons)
 
-    keyboard.add('Список облигаций')
-    await message.answer('Выберите облигацию, которую хотите посмотреть:', reply_markup=inline_keyboard)
+    await message.answer('Выберите облигацию, которую хотите посмотреть:', reply_markup=keyboard)
+
+
+@dp.callback_query_handler(text=data)
+async def func1(call: types.CallbackQuery):
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    buttons = [
+        types.InlineKeyboardButton(f'Сделать что-то №1', callback_data=f'{call.data}1'),
+        types.InlineKeyboardButton(f'Сделать что-то №2', callback_data=f'{call.data}2')
+    ]
+    keyboard.add(*buttons)
+    await call.message.answer(f'{call.data}', reply_markup=keyboard)
+    await call.answer()
+
+@dp.callback_query_handler(text=[bond+'1' for bond in data])
+async def func3(call: types.CallbackQuery):
+    await call.message.answer('Я первая функция!')
+    await call.answer()
+
+
+@dp.callback_query_handler(text=[bond+'2' for bond in data])
+async def func3(call: types.CallbackQuery):
+    await call.message.answer('Я вторая функция!')
+    await call.answer()
 
 
 # region Test
