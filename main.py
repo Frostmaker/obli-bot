@@ -1,6 +1,7 @@
 import logging
 import os
 from sys import exit
+from aiogram.types import *
 from get_data import unique_names
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
