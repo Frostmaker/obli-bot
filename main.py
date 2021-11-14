@@ -15,7 +15,7 @@ WEBHOOK_PATH = f'/{TOKEN}'
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 HOST = '0.0.0.0'
 PORT = int(os.environ.get('PORT', 5001))
-data = ['Sberbank', 'Delimobil', 'Rosneft', 'Phaizer', 'ObligaciiRF', 'RZD', 'GOSDOLG USA', 'MorgensternCoin', 'MoyaSamoochenka', 'WayrmaRossii']
+# data = ['Sberbank', 'Delimobil', 'Rosneft', 'Phaizer', 'ObligaciiRF', 'RZD', 'GOSDOLG USA', 'MorgensternCoin', 'MoyaSamoochenka', 'WayrmaRossii']
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
@@ -121,12 +121,12 @@ async def on_shutdown(dp):
 
 
 if __name__ == '__main__':
-    print(unique_names)
-    print(type(unique_names))
-    executor.start_polling(dp, skip_updates=True)  #
-    # executor.start_webhook(dispatcher=dp,
-    #                       webhook_path=WEBHOOK_PATH,
-    #                       on_startup=on_startup,
-    #                       on_shutdown=on_shutdown,
-    #                       host=HOST,
-    #                       port=PORT)
+    # print(unique_names)
+    # print(type(unique_names))
+    # executor.start_polling(dp, skip_updates=True)  #
+    executor.start_webhook(dispatcher=dp,
+                           webhook_path=WEBHOOK_PATH,
+                           on_startup=on_startup,
+                           on_shutdown=on_shutdown,
+                           host=HOST,
+                           port=PORT)
