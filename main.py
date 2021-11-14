@@ -16,7 +16,8 @@ HOST = '0.0.0.0'
 PORT = int(os.environ.get('PORT', 5001))
 data = ['Sberbank', 'Delimobil', 'Rosneft', 'Phaizer', 'ObligaciiRF', 'RZD', 'GOSDOLG USA', 'MorgensternCoin', 'MoyaSamoochenka', 'WayrmaRossii']
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO,
+                    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
 
 # Initialize bot and dispatcher
 bot = Bot(token=TOKEN)
