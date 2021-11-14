@@ -15,7 +15,6 @@ WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 HOST = '0.0.0.0'
 PORT = int(os.environ.get('PORT', 5001))
 data = ['Sberbank', 'Delimobil', 'Rosneft', 'Phaizer', 'ObligaciiRF', 'RZD', 'GOSDOLG USA', 'MorgensternCoin', 'MoyaSamoochenka', 'WayrmaRossii']
-# data = ['Sberbank', 'Delimobil', 'Rosneft', 'Phaizer']
 
 logging.basicConfig(level=logging.INFO)
 
@@ -33,8 +32,8 @@ async def send_welcome(message: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add('📁 Список облигаций')
     keyboard.add('💼 Собрать портфель')
-    await message.answer("Привет! Меня зовут Obli!\n"
-                         "Я помогу тебе узнать информацию о текущих облигациях.\n", reply_markup=keyboard)
+    await message.answer("Привет, меня зовут Бонд, Джеймс Бонд.\n"
+                         "Я помогу вам с облигациями.\n", reply_markup=keyboard)
 
 
 @dp.message_handler(commands=['help'])
@@ -78,9 +77,9 @@ async def func7(call: types.CallbackQuery):
     await call.answer()
 
 
-@dp.callback_query_handler(text=data)
+@dp.callback_query_handler(text=unique_names)
 async def func1(call: types.CallbackQuery):
-    keyboard = types.InlineKeyboardMarkup(row_width=2)
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
     buttons = [
         types.InlineKeyboardButton(f'Сделать что-то №1', callback_data=f'{call.data}1'),
         types.InlineKeyboardButton(f'Сделать что-то №2', callback_data=f'{call.data}2')
