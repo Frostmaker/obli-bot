@@ -1,6 +1,7 @@
 import logging
 import os
 from sys import exit
+from get_data import unique_names
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 
@@ -55,15 +56,15 @@ async def pack_bag(message: types.Message):
 async def show_bonds(message: types.Message):
     keyboard = InlineKeyboardMarkup(row_width=3)
     buttons = []
-    for bond in range(0, len(data)):
-        buttons.append(InlineKeyboardButton(f'{data[bond]}', callback_data=f'{data[bond]}'))
+    for bond in range(0, len(unique_names)):
+        buttons.append(InlineKeyboardButton(f'{unique_names[bond]}', callback_data=f'{unique_names[bond]}'))
     keyboard.add(*buttons)
     keyboard.add(InlineKeyboardButton(f'←', callback_data=f'<<'), InlineKeyboardButton('1 / 1', callback_data='page_number'), InlineKeyboardButton(f'→', callback_data=f'>>'))
     await message.answer('Выберите облигацию, которую хотите посмотреть:', reply_markup=keyboard)
 
 
 @dp.callback_query_handler(text='<<')
-async def func0(call: types.CallbackQuery):
+async def func5(call: types.CallbackQuery):
     await call.answer()
 
 
@@ -73,13 +74,13 @@ async def func6(call: types.CallbackQuery):
 
 
 @dp.callback_query_handler(text='page_number')
-async def func5(call: types.CallbackQuery):
+async def func7(call: types.CallbackQuery):
     await call.answer()
 
 
 @dp.callback_query_handler(text=data)
 async def func1(call: types.CallbackQuery):
-    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
     buttons = [
         types.InlineKeyboardButton(f'Сделать что-то №1', callback_data=f'{call.data}1'),
         types.InlineKeyboardButton(f'Сделать что-то №2', callback_data=f'{call.data}2')
@@ -89,14 +90,14 @@ async def func1(call: types.CallbackQuery):
     await call.answer()
 
 
-@dp.callback_query_handler(text=[bond+'1' for bond in data])
+@dp.callback_query_handler(text=[bond+'1' for bond in unique_names])
 async def func3(call: types.CallbackQuery):
     await call.message.answer('Я первая функция!')
     await call.answer()
 
 
-@dp.callback_query_handler(text=[bond+'2' for bond in data])
-async def func3(call: types.CallbackQuery):
+@dp.callback_query_handler(text=[bond+'2' for bond in unique_names])
+async def func4(call: types.CallbackQuery):
     await call.message.answer('Я вторая функция!')
     await call.answer()
 
@@ -119,6 +120,8 @@ async def on_shutdown(dp):
 
 
 if __name__ == '__main__':
+    print(unique_names)
+    print(type(unique_names))
     executor.start_polling(dp, skip_updates=True)  #
     # executor.start_webhook(dispatcher=dp,
     #                       webhook_path=WEBHOOK_PATH,
